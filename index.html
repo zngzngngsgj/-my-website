@@ -1,0 +1,447 @@
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحميل فيديوهات تيك توك - TikTok Downloader</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .input-focus:focus {
+            box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.3);
+            border-color: #764ba2;
+        }
+        
+        .btn-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(118, 75, 162, 0.4);
+        }
+        
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #764ba2;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .feature-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .video-preview {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Header -->
+    <nav class="glass-effect fixed w-full z-50 top-0 border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-3">
+                    <i class="fab fa-tiktok text-3xl gradient-text"></i>
+                    <span class="text-2xl font-bold gradient-text">TikDown</span>
+                </div>
+                <div class="hidden md:flex items-center gap-6">
+                    <a href="#home" class="text-gray-700 hover:text-purple-600 font-semibold transition">الرئيسية</a>
+                    <a href="#features" class="text-gray-700 hover:text-purple-600 font-semibold transition">المميزات</a>
+                    <a href="#how-to" class="text-gray-700 hover:text-purple-600 font-semibold transition">كيفية الاستخدام</a>
+                </div>
+                <button onclick="toggleLanguage()" class="px-4 py-2 rounded-full border-2 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white transition font-semibold">
+                    English
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Hero Section -->
+    <section id="home" class="pt-32 pb-20 px-4">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1 class="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
+                حمل فيديوهات تيك توك <br>
+                <span class="text-yellow-300">بدون علامة مائية</span>
+            </h1>
+            <p class="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
+                قم بتحميل فيديوهات تيك توك بجودة عالية HD بصيغة MP4 أو استخرج الصوت بصيغة MP3 بكل سهولة
+            </p>
+
+            <!-- Download Form -->
+            <div class="glass-effect rounded-2xl p-6 md:p-8 shadow-2xl max-w-3xl mx-auto">
+                <div class="relative">
+                    <input 
+                        type="url" 
+                        id="videoUrl" 
+                        placeholder="الصق رابط فيديو تيك توك هنا..." 
+                        class="w-full px-6 py-4 rounded-xl border-2 border-gray-200 input-focus text-lg outline-none transition pr-12"
+                        dir="ltr"
+                    >
+                    <i class="fas fa-link absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <button onclick="pasteUrl()" class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg text-sm font-semibold transition">
+                        لصق
+                    </button>
+                </div>
+                
+                <div class="flex flex-col md:flex-row gap-4 mt-6">
+                    <select id="formatSelect" class="md:w-1/3 px-4 py-3 rounded-xl border-2 border-gray-200 outline-none focus:border-purple-500 bg-white">
+                        <option value="mp4">فيديو HD (MP4)</option>
+                        <option value="mp3">صوت فقط (MP3)</option>
+                        <option value="no-watermark">بدون علامة مائية</option>
+                    </select>
+                    <button onclick="downloadVideo()" class="md:w-2/3 btn-gradient text-white font-bold py-3 px-8 rounded-xl text-lg flex items-center justify-center gap-2">
+                        <span id="btnText">تحميل الآن</span>
+                        <div id="loadingSpinner" class="loading-spinner hidden"></div>
+                        <i id="downloadIcon" class="fas fa-download"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Video Preview Section (Hidden by default) -->
+            <div id="previewSection" class="hidden mt-8 glass-effect rounded-2xl p-6 max-w-3xl mx-auto fade-in">
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="md:w-1/3">
+                        <div class="video-preview rounded-xl aspect-[9/16] flex items-center justify-center relative overflow-hidden">
+                            <img id="previewImage" src="" alt="Video Preview" class="w-full h-full object-cover hidden">
+                            <div id="previewPlaceholder" class="text-center p-4">
+                                <i class="fas fa-video text-4xl text-gray-400 mb-2"></i>
+                                <p class="text-gray-500 text-sm">معاينة الفيديو</p>
+                            </div>
+                            <div class="absolute inset-0 bg-black/50 flex items-center justify-center hidden" id="videoOverlay">
+                                <i class="fas fa-play-circle text-5xl text-white/80"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="md:w-2/3 text-right">
+                        <h3 id="videoTitle" class="text-xl font-bold mb-2 text-gray-800">عنوان الفيديو</h3>
+                        <p id="videoAuthor" class="text-gray-600 mb-4 flex items-center gap-2">
+                            <i class="fas fa-user-circle"></i>
+                            <span>اسم المستخدم</span>
+                        </p>
+                        <div class="flex gap-3 mb-4">
+                            <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-semibold">
+                                <i class="fas fa-heart mr-1"></i> <span id="likeCount">0</span>
+                            </span>
+                            <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-semibold">
+                                <i class="fas fa-comment mr-1"></i> <span id="commentCount">0</span>
+                            </span>
+                            <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">
+                                <i class="fas fa-share mr-1"></i> <span id="shareCount">0</span>
+                            </span>
+                        </div>
+                        <div class="flex gap-3">
+                            <button onclick="startDownload()" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-xl transition flex items-center justify-center gap-2">
+                                <i class="fas fa-cloud-download-alt"></i>
+                                تحميل الفيديو
+                            </button>
+                            <button onclick="resetForm()" class="px-6 py-3 border-2 border-gray-300 rounded-xl hover:bg-gray-50 transition">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Message -->
+            <div id="errorMessage" class="hidden mt-4 bg-red-100 border-r-4 border-red-500 text-red-700 p-4 rounded-lg max-w-3xl mx-auto">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="errorText">يرجى إدخال رابط صحيح</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-16 gradient-text">لماذا تختار أداتنا؟</h2>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="feature-card bg-gray-50 p-8 rounded-2xl text-center">
+                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-bolt text-2xl text-purple-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">سريع ومجاني</h3>
+                    <p class="text-gray-600">تحميل فوري بدون انتظار أو رسوم مخفية. مجاني 100% وبدون قيود</p>
+                </div> 
+                                <div class="feature-card bg-gray-50 p-8 rounded-2xl text-center">
+                    <div class="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-ban text-2xl text-pink-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">بدون علامة مائية</h3>
+                    <p class="text-gray-600">احفظ الفيديوهات بدون شعار تيك توك للاستخدام الشخصي</p>
+                </div>
+
+                <div class="feature-card bg-gray-50 p-8 rounded-2xl text-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-mobile-alt text-2xl text-blue-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">يعمل على جميع الأجهزة</h3>
+                    <p class="text-gray-600">متوافق مع الهواتف والأجهزة اللوحية وأجهزة الكمبيوتر</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How to Use -->
+    <section id="how-to" class="py-20 bg-gray-50">
+        <div class="max-w-5xl mx-auto px-4">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-16 gradient-text">كيفية الاستخدام</h2>
+            
+            <div class="grid md:grid-cols-4 gap-6">
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-purple-600 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">1</div>
+                    <h4 class="font-bold mb-2">انسخ الرابط</h4>
+                    <p class="text-sm text-gray-600">افتح تيك توك واضغط على "مشاركة" ثم "نسخ الرابط"</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-purple-600 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">2</div>
+                    <h4 class="font-bold mb-2">الصق الرابط</h4>
+                    <p class="text-sm text-gray-600">ضع الرابط في المربع أعلاه واختر الصيغة المطلوبة</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-purple-600 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">3</div>
+                    <h4 class="font-bold mb-2">معاينة</h4>
+                    <p class="text-sm text-gray-600">شاهد معلومات الفيديو والجودة قبل التحميل</p>
+                </div>
+                
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-purple-600 text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">4</div>
+                    <h4 class="font-bold mb-2">تحميل</h4>
+                    <p class="text-sm text-gray-600">اضغط تحميل وسيتم حفظ الفيديو على جهازك</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid md:grid-cols-3 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <i class="fab fa-tiktok text-2xl text-purple-400"></i>
+                        <span class="text-xl font-bold">TikDown</span>
+                    </div>
+                    <p class="text-gray-400">أفضل أداة لتحميل فيديوهات تيك توك بجودة عالية وبدون علامة مائية</p>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4">روابط سريعة</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition">الرئيسية</a></li>
+                        <li><a href="#" class="hover:text-white transition">سياسة الخصوصية</a></li>
+                        <li><a href="#" class="hover:text-white transition">شروط الاستخدام</a></li>
+                        <li><a href="#" class="hover:text-white transition">اتصل بنا</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-4">تابعنا</h4>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-purple-600 transition">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-purple-600 transition">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-purple-600 transition">
+                            <i class="fab fa-telegram"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8 text-center text-gray-500 text-sm">
+                <p>© 2024 TikDown. جميع الحقوق محفوظة. | هذا الموقع للأغراض التعليمية فقط</p>
+                <p class="mt-2">نحن لا نخزن أي فيديوهات على خوادمنا. جميع الحقوق تعود لأصحابها.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Paste URL functionality
+        async function pasteUrl() {
+            try {
+                const text = await navigator.clipboard.readText();
+                document.getElementById('videoUrl').value = text;
+                validateUrl(text);
+            } catch (err) {
+                showError('لا يمكن الوصول للحافظة. يرجى اللصق يدوياً');
+            }
+        }
+
+        // URL Validation
+        function validateUrl(url) {
+            const tiktokRegex = /https?:\/\/(www\.)?(tiktok\.com|vm\.tiktok\.com)\/.+/;
+            if (!tiktokRegex.test(url)) {
+                showError('يرجى إدخال رابط تيك توك صحيح');
+                return false;
+            }
+            hideError();
+            return true;
+        }
+
+        // Show/Hide Error
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+            errorText.textContent = message;
+            errorDiv.classList.remove('hidden');
+            setTimeout(() => {
+                errorDiv.classList.add('hidden');
+            }, 5000);
+        }
+
+        function hideError() {
+            document.getElementById('errorMessage').classList.add('hidden');
+        }
+
+        // Download Process
+        async function downloadVideo() {
+            const url = document.getElementById('videoUrl').value;
+            const btnText = document.getElementById('btnText');
+            const spinner = document.getElementById('loadingSpinner');
+            const icon = document.getElementById('downloadIcon');
+            
+            if (!url) {
+                showError('يرجى إدخال رابط الفيديو أولاً');
+                return;
+            }
+            
+            if (!validateUrl(url)) return;
+            
+            // Show loading state
+            btnText.textContent = 'جاري المعالجة...';
+            spinner.classList.remove('hidden');
+            icon.classList.add('hidden');
+            
+            // Simulate API call
+            setTimeout(() => {
+                // Mock data for demonstration
+                const mockData = {
+                    title: 'فيديو تيك توك ممتع 😂✨',
+                    author: '@user_example',
+                    likes: '125.5K',
+                    comments: '3.2K',
+                    shares: '45.1K',
+                    thumbnail: 'https://via.placeholder.com/300x500/764ba2/ffffff?text=TikTok+Video',
+                    downloadUrl: '#'
+                };
+                
+                showPreview(mockData);
+                
+                // Reset button
+                btnText.textContent = 'تحميل الآن';
+                spinner.classList.add('hidden');
+                icon.classList.remove('hidden');
+            }, 2000);
+        }
+
+        // Show Preview
+        function showPreview(data) {
+            document.getElementById('previewSection').classList.remove('hidden');
+            document.getElementById('videoTitle').textContent = data.title;
+            document.getElementById('videoAuthor').innerHTML = `<i class="fas fa-user-circle"></i> ${data.author}`;
+            document.getElementById('likeCount').textContent = data.likes;
+            document.getElementById('commentCount').textContent = data.comments;
+            document.getElementById('shareCount').textContent = data.shares;
+            
+            // Scroll to preview
+            document.getElementById('previewSection').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Start Download
+        function startDownload() {
+            const format = document.getElementById('formatSelect').value;
+            
+            // Create a mock download
+            const link = document.createElement('a');
+            link.href = '#';
+            link.download = `tiktok_video_${Date.now()}.mp4`;
+            
+            // Show success message
+            alert('جاري تحميل الفيديو... \nملاحظة: هذا مثال توضيحي. في التطبيق الحقيقي، سيتم الاتصال بـ API لتحميل الفيديو.');
+            
+            resetForm();
+        }
+
+        // Reset Form
+        function resetForm() {
+            document.getElementById('videoUrl').value = '';
+            document.getElementById('previewSection').classList.add('hidden');
+            hideError();
+        }
+
+        // Language Toggle (Mock)
+        function toggleLanguage() {
+            alert('سيتم تغيير اللغة إلى الإنجليزية (مثال توضيحي)');
+        }
+
+        // Input event listener for real-time validation
+        document.getElementById('videoUrl').addEventListener('input', function(e) {
+            if (e.target.value) {
+                validateUrl(e.target.value);
+            }
+        });
+
+        // Prevent form submission on Enter key
+        document.getElementById('videoUrl').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                downloadVideo();
+            }
+        });
+    </script>
+</body>
+</html>
